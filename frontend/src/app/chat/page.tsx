@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getConversations, createConversation, deleteConversation, type Conversation } from '@/services/chat.service'
-import { MessageSquarePlus, Trash2 } from 'lucide-react'
+import { MessageSquarePlus, Trash2, MessageCircle } from 'lucide-react'
 
 export default function ChatListPage() {
   const router = useRouter()
@@ -31,24 +31,32 @@ export default function ChatListPage() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Conversations</h1>
+        <h1 className="text-xl font-bold text-[#000000]">Conversations</h1>
         <button
           onClick={handleNew}
-          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-800 transition-colors"
+          className="flex items-center gap-2 bg-[#0075DE] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#097FE8] transition-all duration-200 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
         >
           <MessageSquarePlus size={16} />
           New chat
         </button>
       </div>
 
-      {loading && <p className="text-gray-400 text-sm">Loading…</p>}
+      {loading && (
+        <div className="flex items-center gap-2 text-[#B4B4B0] text-sm py-8 justify-center">
+          <div className="w-4 h-4 border-2 border-[#E9E9E7] border-t-[#0075DE] rounded-full animate-spin" />
+          Loading…
+        </div>
+      )}
 
       {!loading && conversations.length === 0 && (
-        <div className="text-center py-16">
-          <p className="text-gray-500 mb-4">No conversations yet.</p>
+        <div className="text-center py-20">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#E6F3FE] text-[#0075DE] mb-4">
+            <MessageCircle size={24} />
+          </div>
+          <p className="text-[#787774] mb-4 text-sm">No conversations yet.</p>
           <button
             onClick={handleNew}
-            className="bg-green-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-green-800 transition-colors"
+            className="bg-[#0075DE] text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#097FE8] transition-all duration-200 cursor-pointer"
           >
             Start your first conversation
           </button>
@@ -60,17 +68,17 @@ export default function ChatListPage() {
           <li key={c._id}>
             <Link
               href={`/chat/${c._id}`}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+              className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#E9E9E7] hover:border-[#D3D3D0] hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 group"
             >
               <div>
-                <p className="font-medium text-sm">{c.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="font-medium text-sm text-[#000000]">{c.title}</p>
+                <p className="text-xs text-[#B4B4B0] mt-0.5">
                   {new Date(c.updatedAt).toLocaleDateString()}
                 </p>
               </div>
               <button
                 onClick={(e) => handleDelete(c._id, e)}
-                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                className="opacity-0 group-hover:opacity-100 text-[#B4B4B0] hover:text-[#F64932] transition-all duration-150 cursor-pointer"
               >
                 <Trash2 size={14} />
               </button>
