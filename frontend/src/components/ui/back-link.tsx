@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
-import { FiArrowLeft, FiArrowRight } from 'react-icons/fi'
-
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { cn } from '@/utilities/ui'
 
 type NavLinkProps = {
@@ -14,12 +13,12 @@ export function BackLink({ children, className, href }: NavLinkProps) {
   return (
     <Link
       className={cn(
-        'inline-flex items-center gap-1.5 text-sm font-semibold text-brand-secondary no-underline hover:text-brand-primary',
+        'inline-flex items-center gap-1.5 text-sm font-semibold text-[#787774] no-underline hover:text-[#000000] transition-colors duration-150',
         className,
       )}
       href={href}
     >
-      <FiArrowLeft aria-hidden className="size-4 shrink-0" />
+      <ArrowLeft aria-hidden className="size-4 shrink-0" />
       {children}
     </Link>
   )
@@ -29,13 +28,13 @@ export function ForwardLink({ children, className, href }: NavLinkProps) {
   return (
     <Link
       className={cn(
-        'inline-flex items-center gap-1.5 text-sm font-semibold text-brand-secondary no-underline hover:text-brand-primary',
+        'inline-flex items-center gap-1.5 text-sm font-semibold text-[#787774] no-underline hover:text-[#000000] transition-colors duration-150',
         className,
       )}
       href={href}
     >
       {children}
-      <FiArrowRight aria-hidden className="size-4 shrink-0" />
+      <ArrowRight aria-hidden className="size-4 shrink-0" />
     </Link>
   )
 }
