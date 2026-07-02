@@ -26,7 +26,7 @@ export default function HomePage() {
           <div className="flex items-center gap-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="AgentPath Logo" width={20} height={20} className="object-contain" />
+              <img src="/logo.png" alt="AgentPath Logo" width={20} height={20} className="object-contain" />
               <span className="text-[#000000] font-extrabold text-base tracking-tight">AgentPath</span>
             </Link>
 
@@ -477,7 +477,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="AgentPath" width={18} height={18} />
+              <img src="/logo.png" alt="AgentPath" width={18} height={18} />
               <span className="font-extrabold text-sm text-[#000000] tracking-tight">AgentPath</span>
             </div>
             <p className="text-[10px] text-[#787774] leading-relaxed">

@@ -7,7 +7,7 @@ export default function AuthRouteLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-[#F6F5F4] flex flex-col">
       <header className="py-6 px-6 flex justify-center">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="AgentPath" width={28} height={28} />
+          <img src="/logo.png" alt="AgentPath" width={28} height={28} />
           <span className="text-[#000000] font-bold text-lg">AgentPath</span>
         </Link>
       </header>
