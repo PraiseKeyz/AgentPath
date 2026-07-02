@@ -25,7 +25,7 @@ export default function ProfilePage() {
         setCourseOfStudy(u.courseOfStudy)
         setYearOfStudy(u.yearOfStudy)
       })
-      .catch(() => router.push('/auth/login'))
+      .catch(() => router.push('/login'))
       .finally(() => setLoading(false))
   }, [router])
 
@@ -44,7 +44,7 @@ export default function ProfilePage() {
 
   function handleLogout() {
     logout()
-    router.push('/auth/login')
+    router.push('/login')
   }
 
   if (loading) {

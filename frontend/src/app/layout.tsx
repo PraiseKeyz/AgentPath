@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import React from 'react'
 import NextTopLoader from 'nextjs-toploader'
 import { Providers } from '@/providers'
-import { inter } from './fonts'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <NextTopLoader color="#0075DE" showSpinner={false} />
         <Providers>{children}</Providers>

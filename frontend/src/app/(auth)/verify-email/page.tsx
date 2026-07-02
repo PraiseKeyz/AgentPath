@@ -45,7 +45,7 @@ export default function VerifyEmailPage() {
         ) : (
           <div className="flex flex-col items-center gap-4 py-4">
             <p className="text-[#F64932] text-sm bg-[#FEF3F1] px-3 py-2 rounded-lg">{error || 'Verification link expired or invalid.'}</p>
-            <Link href="/auth/login" className="text-[#0075DE] text-sm font-semibold hover:underline">
+            <Link href="/login" className="text-[#0075DE] text-sm font-semibold hover:underline">
               Back to Sign In
             </Link>
           </div>

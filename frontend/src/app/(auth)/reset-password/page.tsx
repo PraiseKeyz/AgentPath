@@ -30,12 +30,12 @@ export default function ResetPasswordPage() {
       })
       if (!res.ok) throw new Error('Failed to reset password')
       setSuccess(true)
-      setTimeout(() => router.push('/auth/login'), 2000)
+      setTimeout(() => router.push('/login'), 2000)
     } catch (err: any) {
       setError(err.message ?? 'An error occurred')
       // Fallback/Mock success for demonstration
       setSuccess(true)
-      setTimeout(() => router.push('/auth/login'), 2000)
+      setTimeout(() => router.push('/login'), 2000)
     } finally {
       setLoading(false)
     }
