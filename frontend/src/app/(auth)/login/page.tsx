@@ -27,51 +27,59 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
-        <p className="text-gray-500 mb-8">Sign in to continue with your mentor.</p>
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] p-8">
+        <h1 className="text-2xl font-bold text-[#000000] mb-1">Welcome back</h1>
+        <p className="text-[#787774] text-sm mb-6">Sign in to continue with your mentor.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="email">Email</label>
+            <label className="block text-sm font-medium text-[#37352F] mb-1.5" htmlFor="login-email">
+              Email
+            </label>
             <input
-              id="email"
+              id="login-email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+              placeholder="you@university.edu"
+              className="w-full border border-[#E9E9E7] rounded-lg px-3 py-2 text-sm bg-white text-[#000000] placeholder:text-[#B4B4B0] focus:outline-none focus:ring-2 focus:ring-[#0075DE] focus:border-[#0075DE] transition-all duration-200"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="password">Password</label>
+            <label className="block text-sm font-medium text-[#37352F] mb-1.5" htmlFor="login-password">
+              Password
+            </label>
             <input
-              id="password"
+              id="login-password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+              placeholder="••••••••"
+              className="w-full border border-[#E9E9E7] rounded-lg px-3 py-2 text-sm bg-white text-[#000000] placeholder:text-[#B4B4B0] focus:outline-none focus:ring-2 focus:ring-[#0075DE] focus:border-[#0075DE] transition-all duration-200"
             />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && (
+            <p className="text-[#F64932] text-sm bg-[#FEF3F1] px-3 py-2 rounded-lg">{error}</p>
+          )}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-700 text-white rounded-lg py-2.5 font-semibold hover:bg-green-800 disabled:opacity-50 transition-colors"
+            className="w-full bg-[#0075DE] text-white rounded-lg py-2.5 font-semibold text-sm hover:bg-[#097FE8] disabled:opacity-50 transition-all duration-200 cursor-pointer"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-
-        <p className="mt-6 text-sm text-center text-gray-500">
-          No account?{' '}
-          <Link href="/auth/register" className="text-green-700 font-semibold hover:underline">
-            Create one
-          </Link>
-        </p>
       </div>
+
+      <p className="mt-6 text-sm text-center text-[#787774]">
+        No account?{' '}
+        <Link href="/auth/register" className="text-[#0075DE] font-semibold hover:text-[#005BAB] transition-colors">
+          Create one
+        </Link>
+      </p>
     </div>
   )
 }

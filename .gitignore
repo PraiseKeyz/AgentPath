@@ -3,6 +3,7 @@
 /node_modules
 /build
 /generated
+node_modules/
 
 # Logs
 logs
