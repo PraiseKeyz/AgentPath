@@ -151,6 +151,7 @@ export default function ChatPage() {
           setStreamingContent((prev) => prev + chunk)
         },
         () => {
+          const finalContent = streamRef.current
           setStreaming(false)
           setMessages((prev) => [
             ...prev,
@@ -158,7 +159,7 @@ export default function ChatPage() {
               _id: (Date.now() + 1).toString(),
               conversationId: id,
               role: 'assistant',
-              content: streamRef.current,
+              content: finalContent,
               createdAt: new Date().toISOString(),
             },
           ])
