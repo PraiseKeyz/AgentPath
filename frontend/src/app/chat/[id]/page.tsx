@@ -242,7 +242,7 @@ export default function ChatPage() {
         )}
 
         {/* Messages List */}
-        {!loading && messages.map((msg) => (
+        {!loading && messages.filter((msg) => msg.content && msg.content.trim() !== '').map((msg) => (
           <div
             key={msg._id}
             className={`flex flex-col group ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
