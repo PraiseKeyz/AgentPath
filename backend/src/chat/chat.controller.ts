@@ -7,7 +7,7 @@ import {
   Body,
   Res,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { ChatService } from './chat.service.js';
 import { SendMessageDto } from './dto/send-message.dto.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
