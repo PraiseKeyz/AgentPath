@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { getOpportunity, type Opportunity } from '@/services/opportunities.service'
+import { getOpportunity, isDbOpportunity, type Opportunity } from '@/services/opportunities.service'
 import { addMilestone } from '@/services/roadmap.service'
 import { ArrowLeft, ExternalLink, Calendar, Shield, Building2, Tag, Plus, Check, AlertCircle } from 'lucide-react'
 
@@ -16,7 +16,6 @@ const TYPE_COLORS: Record<string, { pill: string; accent: string }> = {
 }
 
 export default function OpportunityDetailPage() {
-  const router = useRouter()
   const { id } = useParams<{ id: string }>()
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null)
   const [loading, setLoading] = useState(true)
@@ -38,7 +37,7 @@ export default function OpportunityDetailPage() {
       await addMilestone({
         title: `Apply: ${opportunity.title}`,
         description: `${opportunity.type} from ${opportunity.provider}`,
-        opportunityId: opportunity._id,
+        opportunityId: isDbOpportunity(opportunity) ? opportunity._id : undefined,
         dueDate: opportunity.deadline ?? undefined,
       })
       setAddedToRoadmap(true)
