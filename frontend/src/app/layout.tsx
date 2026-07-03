@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import React from 'react'
 import NextTopLoader from 'nextjs-toploader'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { Providers } from '@/providers'
 import './globals.css'
 
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body>
         <NextTopLoader color="#0075DE" showSpinner={false} />
         <Providers>{children}</Providers>

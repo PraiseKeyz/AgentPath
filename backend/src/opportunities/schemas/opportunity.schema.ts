@@ -20,7 +20,7 @@ export class Opportunity {
   @Prop({ required: true })
   provider: string;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   deadline: Date | null;
 
   @Prop({ required: true })

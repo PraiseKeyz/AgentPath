@@ -1,9 +1,8 @@
 /** Client-safe API helpers. Do not import next/headers here. */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
-
+// Next.js rewrites /api/v1/* → backend, so we use relative URLs (no CORS)
 export function apiUrl(path: string): string {
-  return `${API_BASE}/api/v1${path}`
+  return `/api/v1${path}`
 }
 
 export async function clientFetch<T>(path: string, options: RequestInit = {}): Promise<T> {

@@ -6,7 +6,7 @@ import { Message, MessageDocument } from './schemas/message.schema.js';
 import { AiService } from '@/ai/ai.service.js';
 import type { SafeUser } from '@/common/constants/safe-user.constant.js';
 import { SendMessageDto } from './dto/send-message.dto.js';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 @Injectable()
 export class ChatService {

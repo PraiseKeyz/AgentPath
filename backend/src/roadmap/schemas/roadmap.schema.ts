@@ -12,12 +12,12 @@ export class Milestone {
   description: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Opportunity', default: null })
-  opportunityId: Types.ObjectId | null;
+  opportunityId: Types.ObjectId;
 
   @Prop({ enum: ['pending', 'in_progress', 'done'], default: 'pending' })
   status: 'pending' | 'in_progress' | 'done';
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   dueDate: Date | null;
 
   @Prop({ default: Date.now })

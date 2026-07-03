@@ -1,15 +1,25 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+const PROTECTED_PREFIXES = ['/chat', '/roadmap', '/opportunities', '/profile', '/onboarding']
+const AUTH_PREFIXES = ['/login', '/register']
 
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const session = request.cookies.get('ap_session')?.value
+
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))
+  const isAuthRoute = AUTH_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))
+
+  if (isProtected && !session) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (isAuthRoute && session) {
+    return NextResponse.redirect(new URL('/chat', request.url))
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {

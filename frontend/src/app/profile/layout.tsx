@@ -1,6 +1,11 @@
 import React from 'react'
-import AppLayout from '@/components/layout/AppLayout'
+import { AppSidebar } from '@/components/AppSidebar'
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <AppLayout>{children}</AppLayout>
+export default function ProfileLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-screen overflow-hidden bg-white">
+      <AppSidebar />
+      <main className="flex-1 overflow-auto bg-white">{children}</main>
+    </div>
+  )
 }
