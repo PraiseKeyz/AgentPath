@@ -1,11 +1,11 @@
-# *
 User-agent: *
-Disallow: /admin/*
+Allow: /
+Disallow: /chat
+Disallow: /chat/
+Disallow: /roadmap
+Disallow: /opportunities/
+Disallow: /profile
+Disallow: /onboarding
+Disallow: /api/
 
-# Host
-Host: https://example.com
-
-# Sitemaps
-Sitemap: https://example.com/sitemap.xml
-Sitemap: https://example.com/pages-sitemap.xml
-Sitemap: https://example.com/posts-sitemap.xml
+Sitemap: https://agentpath.vercel.app/sitemap.xml

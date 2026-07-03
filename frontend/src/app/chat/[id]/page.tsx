@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { getConversation, streamMessage, type Message } from '@/services/chat.service'
+import { usePageTitle } from '@/providers/PageTitleProvider'
 import { ArrowLeft, ArrowUp, Sparkles, Calendar, Compass, ClipboardList, BookOpen, ChevronDown } from 'lucide-react'
 
 // Simple helper to escape HTML tags to prevent XSS in rendering
@@ -86,21 +87,24 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
   const [loading, setLoading] = useState(true)
-  const [showScrollBtn, setShowScrollBtn] = useState(false)
-  const [conversationTitle, setConversationTitle] = useState('Chat')
-
-  const chatContainerRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const streamRef = useRef('')
+  const { setTitle } = usePageTitle()
 
   useEffect(() => {
     getConversation(id)
       .then(({ conversation, messages }) => {
         setMessages(messages)
-        setConversationTitle(conversation?.title || 'Mentor Chat')
+        setConversationTitle(conversation.title)
+        setTitle(conversation.title)
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  // Clear title when leaving the conversation
+  useEffect(() => {
+    return () => setTitle('')
+  }, [])
 
   useEffect(() => {
     scrollToBottom()
@@ -122,6 +126,13 @@ export default function ChatPage() {
   function handleSend(textToSend?: string) {
     const content = (textToSend || input).trim()
     if (!content || streaming) return
+
+    // Update header title immediately on first message
+    if (conversationTitle === 'New conversation') {
+      const derived = content.slice(0, 60)
+      setConversationTitle(derived)
+      setTitle(derived)
+    }
 
     const userMsg: Message = {
       _id: Date.now().toString(),

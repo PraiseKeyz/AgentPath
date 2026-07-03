@@ -6,23 +6,54 @@ import { GeistMono } from 'geist/font/mono'
 import { Providers } from '@/providers'
 import './globals.css'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: 'AgentPath — Your AI Mentor',
+  metadataBase: new URL(APP_URL),
+  title: {
+    default: 'AgentPath — Your AI Mentor',
+    template: '%s | AgentPath',
+  },
   description:
-    'AI-powered mentorship and opportunity guidance for first-generation Nigerian university students.',
+    'AI-powered mentorship and opportunity guidance for first-generation Nigerian university students. Discover scholarships, fellowships, internships, and grants with a mentor that understands your journey.',
+  keywords: [
+    'mentorship',
+    'scholarship Nigeria',
+    'first-generation students',
+    'Nigerian university',
+    'AI mentor',
+    'fellowship',
+    'internship Nigeria',
+    'student opportunities',
+    'John Amhanesi Foundation',
+    'JAF',
+  ],
+  authors: [{ name: 'AgentPath' }],
+  creator: 'AgentPath',
   openGraph: {
+    type: 'website',
+    locale: 'en_NG',
+    url: '/',
+    siteName: 'AgentPath',
     title: 'AgentPath — Your AI Mentor',
     description:
       'AI-powered mentorship and opportunity guidance for first-generation Nigerian university students.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
-    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AgentPath — Your AI Mentor',
     description:
       'AI-powered mentorship and opportunity guidance for first-generation Nigerian university students.',
-    images: ['/twitter-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 

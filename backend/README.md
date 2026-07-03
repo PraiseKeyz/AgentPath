@@ -1,104 +1,148 @@
-# SCMS Backend
+# AgentPath Backend
 
-NestJS REST + WebSocket API for SCMS, backed by PostgreSQL (Neon) via Prisma.
+NestJS 11 API for AgentPath — auth, student profiles, AI mentor chat, opportunities, and roadmaps, backed by MongoDB.
 
-See [docs/API_REFERENCE.md](../docs/API_REFERENCE.md) for the full endpoint and WebSocket
-event reference, and [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) for system diagrams.
+Part of the [AgentPath monorepo](../README.md).
 
-## Stack
+## Requirements
 
-- NestJS 11, bundled with webpack (see `webpack.config.js` and `nest-cli.json`)
-- Prisma ORM, client generated into `generated/prisma/` (gitignored, regenerated on install)
-- PostgreSQL via Neon
-- Passport JWT for auth, argon2 for password hashing
-- Socket.IO for the `/parking` and `/alerts` real-time namespaces
+- Node.js ≥ 20 (or 18.20+)
+- pnpm ≥ 9
+- MongoDB (local or hosted)
+- A [Groq API key](https://console.groq.com/) for the AI mentor
 
 ## Setup
 
-```bash
-pnpm install
-```
-
-Copy `.env.example` to `.env` and fill in the values:
+Create `backend/.env`:
 
 ```env
-PORT=3000
+PORT=4000
 NODE_ENV=development
-DATABASE_URL=postgresql://user:password@host:5432/scms_db
-JWT_SECRET=change-this-to-a-long-random-secret
+MONGODB_URI=mongodb://localhost:27017/agentpath
+JWT_SECRET=change_me_to_a_long_random_string
 JWT_EXPIRES_IN=7d
+GROQ_API_KEY=your_groq_api_key
+AI_MODEL=llama-3.3-70b-versatile
 FRONTEND_URL=http://localhost:3000
 ```
 
-Run the initial migration and generate the Prisma client:
+| Variable | Description |
+|---|---|
+| `PORT` | API port (default `4000`) |
+| `MONGODB_URI` | MongoDB connection string |
+| `JWT_SECRET` / `JWT_EXPIRES_IN` | JWT signing secret and lifetime |
+| `GROQ_API_KEY` | Groq API key for AI responses |
+| `AI_MODEL` | Groq model id — swap without touching code (`llama-3.3-70b-versatile` default, `llama-3.1-8b-instant` for lower latency) |
+| `FRONTEND_URL` | Extra allowed CORS origin(s), comma-separated. `localhost:3000`/`3001` are always allowed |
+
+Then:
 
 ```bash
-pnpm prisma:migrate
+pnpm install                 # from the repo root
+pnpm --filter backend seed   # populate the opportunities collection
+pnpm --filter backend dev    # start in watch mode
 ```
 
-Seed the database with sample zones, gates, landmarks, and staff accounts:
+The API runs at `http://localhost:4000/api/v1`.
 
-```bash
-pnpm prisma:seed
-```
+## Scripts
 
-This prints login credentials for two wardens and an admin to the console.
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Start with watch mode (`nest start --watch`) |
+| `pnpm build` | Compile to `dist/` |
+| `pnpm start` | Run the production build |
+| `pnpm seed` | Seed the opportunities collection (`node seed.cjs`) |
+| `pnpm lint` | ESLint with autofix |
+| `pnpm test` | Jest unit tests |
 
-## Running
-
-```bash
-pnpm start:dev     # watch mode
-pnpm start         # single run
-pnpm start:prod    # runs the built dist/main.js
-```
-
-The API listens at `http://localhost:3000/api/v1` (global prefix `api`, URI versioning).
-
-## Tests
-
-```bash
-pnpm test
-```
-
-## Build
-
-```bash
-pnpm build
-```
-
-Runs `nest build` (webpack) followed by `tsc-alias`, output to `dist/`.
-
-## Database Scripts
-
-| Script | What it does |
-|--------|---------------|
-| `pnpm prisma:generate` | Regenerate the Prisma client |
-| `pnpm prisma:migrate` | Run `prisma migrate dev` |
-| `pnpm prisma:studio` | Open Prisma Studio against the configured `DATABASE_URL` |
-| `pnpm prisma:seed` | Wipe and reseed zones, gates, landmarks, and staff accounts |
-| `pnpm db:reset` | `prisma migrate reset --force` — drops and recreates the database. Local/dev only. |
-
-## Project Layout
+## Project Structure
 
 ```
 src/
-├── auth/            # login, me, change-password, JWT strategy + guards
-├── users/            # ADMIN-only user CRUD
-├── campus/           # public map/zones/gates/landmarks endpoints
-├── parking/          # zone status, nearest-zone recommendation, /parking socket gateway
-├── alerts/           # broadcast alerts, incidents, warden checkin, /alerts socket gateway
-├── recommendations/  # distance + occupancy heuristic scoring (no external ML service)
-├── prisma/           # global PrismaModule + PrismaService
-└── common/           # decorators, guards, filters, interceptors shared across modules
+├── main.ts               Bootstrap — global prefix /api, URI versioning (v1),
+│                         validation pipe, CORS allowlist, compression, cookies
+├── app.module.ts         Root module — Mongoose, throttling, global guards
+├── common/
+│   ├── decorators/       @Public(), @CurrentUser(), @Roles()
+│   ├── filters/          HttpExceptionFilter — standard error envelope
+│   ├── interceptors/     TransformInterceptor — standard success envelope
+│   └── constants/        SafeUser shape (user without password)
+├── auth/                 Register, login, me, change-password; JWT strategy + guard
+├── users/                Profile updates, onboarding completion
+├── chat/                 Conversations + messages, SSE streaming endpoint
+├── ai/                   Groq integration — system prompt building + token streaming
+├── opportunities/        Curated opportunity database (list, filter, detail)
+└── roadmap/              One roadmap per user with embedded milestones
 ```
 
-## Key Design Decisions
+## Conventions
 
-- Only `WARDEN` and `ADMIN` roles exist. Visitors and drivers are anonymous and never touch
-  the auth system.
-- There's no public signup. An `ADMIN` provisions warden accounts through `POST /users`.
-- Every response is wrapped in `{ success, message, data, error, timestamp }` via a global
-  interceptor and exception filter.
-- `ADMIN` automatically passes every `@Roles(...)` check, regardless of which role is listed.
-- The JWT is returned in the response body as `accessToken`, not a cookie, since the Flutter
-  client can't read httpOnly cookies.
+- **Auth by default** — a global `JwtAuthGuard` protects every route; public endpoints opt out with `@Public()`. The authenticated user is injected with `@CurrentUser()`.
+- **Response envelope** — controllers return `{ message, data }`; the `TransformInterceptor` wraps this into:
+  ```json
+  { "success": true, "message": "...", "data": {}, "error": null, "timestamp": "..." }
+  ```
+  Errors are shaped the same way by `HttpExceptionFilter` with `success: false` and an `error` object.
+- **Rate limiting** — global throttle of 120 requests/minute per client.
+- **Validation** — global `ValidationPipe` with `whitelist` + `forbidNonWhitelisted`; every body has a DTO in the module's `dto/` folder.
+- **Module layout** — each module has `*.module.ts`, `*.controller.ts`, `*.service.ts`, and `dto/` / `schemas/` as needed.
+
+## API Endpoints
+
+Base path: `/api/v1`
+
+### Auth
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/auth/register` | Public | Create account, returns `{ user, accessToken }` |
+| POST | `/auth/login` | Public | Login, returns `{ user, accessToken }` |
+| GET | `/auth/me` | JWT | Current authenticated user |
+| POST | `/auth/change-password` | JWT | Change password |
+
+### Users
+| Method | Path | Description |
+|---|---|---|
+| PATCH | `/users/profile` | Update profile fields |
+| POST | `/users/onboarding` | Complete onboarding (sets `isOnboarded: true`) |
+
+### Chat
+| Method | Path | Description |
+|---|---|---|
+| GET | `/chat/conversations` | List the current user's conversations |
+| POST | `/chat/conversations` | Start a new conversation |
+| GET | `/chat/conversations/:id` | Get a conversation with its messages |
+| POST | `/chat/conversations/:id/messages` | Send a message — streams the AI reply via SSE |
+| DELETE | `/chat/conversations/:id` | Delete a conversation and its messages |
+
+### Opportunities
+| Method | Path | Description |
+|---|---|---|
+| GET | `/opportunities` | List active opportunities (`?type=`, `?tag=`, `?q=`) |
+| GET | `/opportunities/:id` | Get a single opportunity |
+
+### Roadmap
+| Method | Path | Description |
+|---|---|---|
+| GET | `/roadmap` | Get the current user's roadmap |
+| POST | `/roadmap/milestones` | Add a milestone |
+| PATCH | `/roadmap/milestones/:id` | Update a milestone |
+| DELETE | `/roadmap/milestones/:id` | Remove a milestone |
+
+## AI Mentor
+
+`AiService` builds a per-request system prompt containing:
+
+1. The student's profile — name, university, course, year, stated goals
+2. A summary of every **active** opportunity in the database
+3. The agency-first instructions — always ask before suggesting, warm peer-like tone, explain all acronyms, never open with a list
+
+The full conversation history is sent on every request (memory via MongoDB). Responses stream token-by-token as Server-Sent Events:
+
+```
+data: {"chunk": "..."}
+data: {"chunk": "..."}
+data: {"done": true}
+```
+
+The complete response is persisted as a `Message` after streaming finishes.

@@ -1,5 +1,8 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 @import 'tw-animate-css';
+
+@source '../**/*.{ts,tsx,js,jsx}';
+
 @custom-variant dark (&:is([data-theme='dark'] *));
 @custom-variant sm (@media (width >=theme(--breakpoint-sm)));
 @custom-variant md (@media (width >=theme(--breakpoint-md)));
@@ -20,7 +23,6 @@
 }
 
 @plugin "@tailwindcss/typography";
-@source "../components/**/*.{ts,tsx}";
 
 /* ── Notion Design System Tokens ────────────────────────────────── */
 

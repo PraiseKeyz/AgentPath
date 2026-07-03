@@ -2,32 +2,45 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { MessageSquare, Compass, Map, User, Menu, X, LogOut } from 'lucide-react'
 import { Logo } from '@/components/ui/logo'
+import { usePageTitle } from '@/providers/PageTitleProvider'
 
 interface AppShellProps {
   children: React.ReactNode
-  user: {
-    name: string
-    email: string
-  } | null
+  user: { name: string; email: string } | null
   logout: () => void
 }
 
 const navItems = [
-  { href: '/chat', label: 'Chat', Icon: MessageSquare },
+  { href: '/chat', label: 'AI Mentor', Icon: MessageSquare },
   { href: '/opportunities', label: 'Opportunities', Icon: Compass },
   { href: '/roadmap', label: 'Roadmap', Icon: Map },
   { href: '/profile', label: 'Profile', Icon: User },
 ]
 
+const STATIC_TITLES: Record<string, string> = {
+  '/chat': 'AI Mentor',
+  '/opportunities': 'Opportunities',
+  '/roadmap': 'Roadmap',
+  '/profile': 'Profile',
+}
+
+function getContentTitle(pathname: string, contextTitle: string): string {
+  if (pathname.startsWith('/chat/') && contextTitle) return contextTitle
+  if (pathname.startsWith('/chat/')) return 'New conversation'
+  for (const [prefix, label] of Object.entries(STATIC_TITLES)) {
+    if (pathname.startsWith(prefix)) return label
+  }
+  return 'AgentPath'
+}
+
 export default function AppShell({ children, user, logout }: AppShellProps) {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { title: contextTitle } = usePageTitle()
 
-  // Get user initials
   function getInitials(name?: string) {
     if (!name) return 'U'
     const parts = name.trim().split(/\s+/)
@@ -35,25 +48,19 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
   }
 
-  // Check if link is active (exact match or prefix for nested paths)
   function isActive(href: string) {
-    if (href === '/chat') {
-      return pathname.startsWith('/chat')
-    }
-    if (href === '/opportunities') {
-      return pathname.startsWith('/opportunities')
-    }
-    return pathname === href
+    return pathname === href || pathname.startsWith(href + '/')
   }
+
+  const contentTitle = getContentTitle(pathname, contextTitle)
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#F6F5F4] border-r border-[#E9E9E7]">
-      {/* Brand Header */}
-      <div className="px-4 py-4 flex items-center justify-between border-b border-[#E9E9E7]/60 md:border-none">
-        <Link href="/" className="flex items-center">
+      {/* Brand */}
+      <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+        <Link href="/chat" className="flex items-center">
           <Logo size={22} />
         </Link>
-        {/* Mobile close button */}
         <button
           onClick={() => setIsMobileMenuOpen(false)}
           className="md:hidden p-1 rounded hover:bg-[#EFEEEC] text-[#787774] hover:text-[#37352F]"
@@ -63,7 +70,10 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-0.5 px-2 flex-1 pt-4">
+      <nav className="flex flex-col gap-0.5 px-2 flex-1 pt-1">
+        <p className="text-[10px] font-bold text-[#B4B4B0] uppercase tracking-widest px-3 py-2 select-none">
+          Workspace
+        </p>
         {navItems.map(({ href, label, Icon }) => {
           const active = isActive(href)
           return (
@@ -73,22 +83,26 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
               onClick={() => setIsMobileMenuOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                 active
-                  ? 'bg-[#EFEEEC] text-[#37352F] font-semibold'
+                  ? 'bg-[#0075DE]/10 text-[#0075DE] font-semibold'
                   : 'text-[#787774] hover:bg-[#EFEEEC] hover:text-[#37352F]'
               }`}
             >
-              <Icon size={18} strokeWidth={1.8} />
+              <Icon
+                size={16}
+                strokeWidth={active ? 2.2 : 1.8}
+                className={active ? 'text-[#0075DE]' : ''}
+              />
               <span>{label}</span>
             </Link>
           )
         })}
       </nav>
 
-      {/* User profile footer */}
+      {/* User footer */}
       {user && (
-        <div className="p-3 border-t border-[#E9E9E7] flex flex-col gap-2 bg-[#F6F5F4]">
-          <div className="flex items-center gap-2.5 px-2 py-1">
-            <div className="size-8 rounded-full bg-gradient-to-br from-[#0075DE] to-[#62AEF0] text-white flex items-center justify-center text-xs font-semibold select-none shadow-[0_1px_2px_rgba(0,0,0,0.1)]">
+        <div className="p-3 border-t border-[#E9E9E7] flex flex-col gap-1.5">
+          <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg">
+            <div className="size-8 rounded-full bg-gradient-to-br from-[#0075DE] to-[#62AEF0] text-white flex items-center justify-center text-xs font-bold select-none shrink-0">
               {getInitials(user.name)}
             </div>
             <div className="flex-1 min-w-0">
@@ -97,16 +111,11 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
             </div>
           </div>
           <button
-            onClick={() => {
-              setIsMobileMenuOpen(false)
-              logout()
-            }}
-            className="flex items-center justify-between w-full text-left px-2 py-1.5 rounded-md text-xs text-[#F64932] hover:bg-[#FEF3F1] font-semibold transition-colors duration-150 cursor-pointer"
+            onClick={() => { setIsMobileMenuOpen(false); logout() }}
+            className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs text-[#F64932] hover:bg-[#FEF3F1] font-semibold transition-colors duration-150 cursor-pointer"
           >
-            <span className="flex items-center gap-2">
-              <LogOut size={12} />
-              Sign out
-            </span>
+            <LogOut size={12} />
+            Sign out
           </button>
         </div>
       )}
@@ -116,7 +125,7 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
   return (
     <div className="flex h-screen overflow-hidden bg-white">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-[240px] shrink-0 h-full">
+      <aside className="hidden md:flex w-[220px] shrink-0 h-full">
         {sidebarContent}
       </aside>
 
@@ -130,34 +139,31 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
 
       {/* Mobile Drawer */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-[240px] md:hidden transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-[220px] md:hidden transform transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {sidebarContent}
       </aside>
 
-      {/* Main layout container */}
+      {/* Main content column */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Mobile Navbar Header */}
-        <header className="md:hidden h-12 border-b border-[#E9E9E7] flex items-center px-4 justify-between bg-white shrink-0">
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="p-1 rounded hover:bg-[#F6F5F4] text-[#37352F]"
-            >
-              <Menu size={20} />
-            </button>
-            <span className="font-bold text-[#000000] text-sm">AgentPath</span>
-          </div>
-          {user && (
-            <div className="size-6 rounded-full bg-gradient-to-br from-[#0075DE] to-[#62AEF0] text-white flex items-center justify-center text-[10px] font-semibold select-none">
-              {getInitials(user.name)}
-            </div>
-          )}
+        {/* Content header — shows page/conversation title */}
+        <header className="h-[52px] border-b border-[#E9E9E7] flex items-center px-5 shrink-0 bg-white gap-3">
+          {/* Mobile menu trigger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="md:hidden p-1 -ml-1 rounded hover:bg-[#F6F5F4] text-[#787774] shrink-0"
+          >
+            <Menu size={18} />
+          </button>
+
+          <h1 className="text-[15px] font-semibold text-[#000000] tracking-tight truncate">
+            {contentTitle}
+          </h1>
         </header>
 
-        {/* Page Content area */}
+        {/* Page content */}
         <main className="flex-1 overflow-auto bg-white">
           {children}
         </main>
