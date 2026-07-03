@@ -10,9 +10,6 @@ export const metadata: Metadata = {
   title: 'AgentPath — Your AI Mentor',
   description:
     'AI-powered mentorship and opportunity guidance for first-generation Nigerian university students.',
-  icons: {
-    icon: '/favicon.ico',
-  },
   openGraph: {
     title: 'AgentPath — Your AI Mentor',
     description:

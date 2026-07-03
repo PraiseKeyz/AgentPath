@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
 
 export default function AuthRouteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,15 +11,12 @@ export default function AuthRouteLayout({ children }: { children: React.ReactNod
 
       {/* Header */}
       <header className="py-8 px-6 flex justify-center z-10">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <img
-            src="/logo.png"
-            alt="AgentPath Logo"
-            width={24}
-            height={24}
-            className="object-contain group-hover:scale-105 transition-transform duration-200"
+        <Link href="/" className="flex items-center group">
+          <Logo
+            size={22}
+            markClassName="group-hover:scale-105 transition-transform duration-200"
+            textClassName="font-extrabold"
           />
-          <span className="text-[#000000] font-extrabold text-base tracking-tight">AgentPath</span>
         </Link>
       </header>
 

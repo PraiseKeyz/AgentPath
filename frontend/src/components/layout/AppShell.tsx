@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { MessageSquare, Compass, Map, User, Menu, X, LogOut } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 
 interface AppShellProps {
   children: React.ReactNode
@@ -49,9 +50,8 @@ export default function AppShell({ children, user, logout }: AppShellProps) {
     <div className="flex flex-col h-full bg-[#F6F5F4] border-r border-[#E9E9E7]">
       {/* Brand Header */}
       <div className="px-4 py-4 flex items-center justify-between border-b border-[#E9E9E7]/60 md:border-none">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="AgentPath" width={24} height={24} className="object-contain" />
-          <span className="font-bold text-[#000000] text-base tracking-tight">AgentPath</span>
+        <Link href="/" className="flex items-center">
+          <Logo size={22} />
         </Link>
         {/* Mobile close button */}
         <button
