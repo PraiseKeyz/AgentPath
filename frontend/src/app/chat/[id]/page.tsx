@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { getConversation, streamMessage, type Message } from '@/services/chat.service'
 import { usePageTitle } from '@/providers/PageTitleProvider'
-import { ArrowLeft, ArrowUp, Sparkles, Calendar, Compass, ClipboardList, BookOpen, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowUp, Sparkles, Compass, ClipboardList, BookOpen, ChevronDown } from 'lucide-react'
 
 // Simple helper to escape HTML tags to prevent XSS in rendering
 function escapeHtml(text: string) {
@@ -87,7 +87,10 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
   const [loading, setLoading] = useState(true)
+  const [conversationTitle, setConversationTitle] = useState('New conversation')
+  const [showScrollBtn, setShowScrollBtn] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const streamRef = useRef('')
   const { setTitle } = usePageTitle()
 
